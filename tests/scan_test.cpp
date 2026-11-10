@@ -107,6 +107,18 @@ TEST(ScanTest, SpecifierDoesNotMatchType) {
 
 TEST(ScanTest, UnknownSpecifier) { EXPECT_FALSE(stdx::scan<int32_t>("1", "{%x}")); }
 
+TEST(ScanTest, ReferenceTypeIsUnsupported) {
+    auto result = stdx::scan<int &>("42", "{}");
+    ASSERT_FALSE(result);
+    EXPECT_EQ(result.error().message, "Unsupported target type");
+}
+
+TEST(ScanTest, BoolIsUnsupported) {
+    auto result = stdx::scan<bool>("1", "{}");
+    ASSERT_FALSE(result);
+    EXPECT_EQ(result.error().message, "Unsupported target type");
+}
+
 static_assert(stdx::details::scannable<const uint64_t>);
 static_assert(stdx::details::scannable<volatile double>);
 static_assert(!stdx::details::scannable<int &>);
